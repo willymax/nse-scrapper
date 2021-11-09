@@ -8,9 +8,9 @@ weekno = datetime.datetime.today().weekday()
 
 is_weekday = False
 if weekno < 5:
-    is_weekend = True
+    is_weekday = True
 else:  # 5 Sat, 6 Sun
-    is_weekend = False
+    is_weekday = False
 
 
 def getData(stock_symbol):

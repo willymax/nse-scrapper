@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import pandas
 import datetime
 import os
+import urllib
 
 from dotenv import load_dotenv
 
@@ -23,6 +24,10 @@ def get_database():
 
     # Provide the mongodb atlas url to connect python to mongodb using pymongo
     CONNECTION_STRING = os.environ.get('MONGO_DB_URL')
+    MONGO_USER = os.environ.get('MONGO_USER')
+    MONGO_PASSWORD = os.environ.get('MONGO_PASSWORD')
+    mongo_uri = "mongodb://" + MONGO_USER + ":" + \
+        urllib.quote("" + MONGO_PASSWORD + "") + "@127.0.0.1:27001/"
 
     # Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
     from pymongo import MongoClient

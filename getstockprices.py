@@ -4,6 +4,10 @@ import pandas
 import datetime
 import os
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 weekno = datetime.datetime.today().weekday()
 
 is_weekday = False
@@ -12,19 +16,21 @@ if weekno < 5:
 else:  # 5 Sat, 6 Sun
     is_weekday = False
 
+
 def get_database():
     from pymongo import MongoClient
     import pymongo
 
     # Provide the mongodb atlas url to connect python to mongodb using pymongo
-    CONNECTION_STRING = "mongodb+srv://<username>:<password>@<cluster-name>.mongodb.net/myFirstDatabase"
+    CONNECTION_STRING = os.environ.get('MONGO_DB_URL')
 
     # Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
     from pymongo import MongoClient
     client = MongoClient(CONNECTION_STRING)
 
     # Create the database for our example (we will use the same database throughout the tutorial
-    return client['user_shopping_list']
+    return client['stock_prices']
+
 
 def getData(stock_symbol):
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
@@ -35,25 +41,31 @@ def getData(stock_symbol):
     soup = BeautifulSoup(r.text, 'html.parser')
     # Open,High,Low,Close,Adj Close,Volume
     stock = {
-        'Date': [datetime.date.today()],
-        'Open': [soup.find('b', {'id': 'rtPrev'}).text],
-        'High': [soup.find('b', {'id': 'rtHi'}).text],
-        'Low': [soup.find('b', {'id': 'rtLo'}).text],
-        'Close': [soup.find('b', {'id': 'rtPrice2'}).text],
-        'Volume': [soup.find('b', {'id': 'rtVol'}).text],
+        'Date': datetime.date.today(),
+        'Open': soup.find('b', {'id': 'rtPrev'}).text,
+        'High': soup.find('b', {'id': 'rtHi'}).text,
+        'Low': soup.find('b', {'id': 'rtLo'}).text,
+        'Close': soup.find('b', {'id': 'rtPrice2'}).text,
+        'Volume': soup.find('b', {'id': 'rtVol'}).text,
     }
     return stock
 
 
-if is_weekday:
+if is_weekday == False:
+    # Get the database
+    dbname = get_database()
+    collection_name = dbname["stock_prices"]
+    theData = []
     with open('symbols.csv') as f:
         lines = f.read().splitlines()
         for symbol in lines:
             print(symbol)
-            data = pandas.DataFrame.from_dict(getData(symbol))
-            if os.path.isfile("datasets/{}.csv".format(symbol)):
-                data.to_csv("datasets/{}.csv".format(symbol), mode='a', header=False, index=False)
-            else:
-                data.to_csv("datasets/{}.csv".format(symbol), mode='a', header=True, index=False)
-            data.columns = ['Date', 'Open', 'High', 'Low', 'Close', 'Volume']
-
+            # data = pandas.DataFrame.from_dict(getData(symbol))
+            theData.append(getData(symbol))
+            # if os.path.isfile("datasets/{}.csv".format(symbol)):
+            #     data.to_csv("datasets/{}.csv".format(symbol), mode='a', header=False, index=False)
+            # else:
+            #     data.to_csv("datasets/{}.csv".format(symbol), mode='a', header=True, index=False)
+            # data.columns = ['Date', 'Open', 'High', 'Low', 'Close', 'Volume']
+        collection_name.insert_many(theData)
+        print('Done')

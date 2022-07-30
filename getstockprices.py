@@ -12,6 +12,19 @@ if weekno < 5:
 else:  # 5 Sat, 6 Sun
     is_weekday = False
 
+def get_database():
+    from pymongo import MongoClient
+    import pymongo
+
+    # Provide the mongodb atlas url to connect python to mongodb using pymongo
+    CONNECTION_STRING = "mongodb+srv://<username>:<password>@<cluster-name>.mongodb.net/myFirstDatabase"
+
+    # Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
+    from pymongo import MongoClient
+    client = MongoClient(CONNECTION_STRING)
+
+    # Create the database for our example (we will use the same database throughout the tutorial
+    return client['user_shopping_list']
 
 def getData(stock_symbol):
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
@@ -43,3 +56,4 @@ if is_weekday:
             else:
                 data.to_csv("datasets/{}.csv".format(symbol), mode='a', header=True, index=False)
             data.columns = ['Date', 'Open', 'High', 'Low', 'Close', 'Volume']
+

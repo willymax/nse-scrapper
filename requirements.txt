@@ -4,4 +4,3 @@ pandas
 pymongo
 dnspython
 python-dotenv
-urllib

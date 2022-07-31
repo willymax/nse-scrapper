@@ -26,8 +26,9 @@ def get_database():
     CONNECTION_STRING = os.environ.get('MONGO_DB_URL')
     MONGO_USER = os.environ.get('MONGO_USER')
     MONGO_PASSWORD = os.environ.get('MONGO_PASSWORD')
-    mongo_uri = "mongodb://" + MONGO_USER + ":" + \
-        urllib.quote("" + MONGO_PASSWORD + "") + "@127.0.0.1:27001/"
+    CONNECTION_STRING = "mongodb+srv://" + MONGO_USER + \
+        ":" + urllib.parse.quote("" + MONGO_PASSWORD + "") + \
+        "@cluster0.fratpi8.mongodb.net/?retryWrites=true&w=majority"
 
     # Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
     from pymongo import MongoClient
@@ -45,8 +46,9 @@ def getData(stock_symbol):
 
     soup = BeautifulSoup(r.text, 'html.parser')
     # Open,High,Low,Close,Adj Close,Volume
+    thedatetime = datetime.date.today().strftime('%m/%d/%Y')
     stock = {
-        'Date': datetime.date.today(),
+        'Date': thedatetime,
         'Open': soup.find('b', {'id': 'rtPrev'}).text,
         'High': soup.find('b', {'id': 'rtHi'}).text,
         'Low': soup.find('b', {'id': 'rtLo'}).text,
@@ -68,9 +70,12 @@ if is_weekday == False:
             # data = pandas.DataFrame.from_dict(getData(symbol))
             theData.append(getData(symbol))
             # if os.path.isfile("datasets/{}.csv".format(symbol)):
-            #     data.to_csv("datasets/{}.csv".format(symbol), mode='a', header=False, index=False)
+            #     data.to_csv("datasets/{}.csv".format(symbol),
+            #                 mode='a', header=False, index=False)
             # else:
-            #     data.to_csv("datasets/{}.csv".format(symbol), mode='a', header=True, index=False)
+            #     data.to_csv("datasets/{}.csv".format(symbol),
+            #                 mode='a', header=True, index=False)
             # data.columns = ['Date', 'Open', 'High', 'Low', 'Close', 'Volume']
+        print(theData)
         collection_name.insert_many(theData)
-        print('Done')
+        print('Done updating records')

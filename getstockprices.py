@@ -46,7 +46,7 @@ def getData(stock_symbol):
 
     soup = BeautifulSoup(r.text, 'html.parser')
     # Open,High,Low,Close,Adj Close,Volume
-    thedatetime = datetime.date.today().strftime('%m/%d/%Y')
+    thedatetime = datetime.date.today().strftime('%d/%m/%Y')
     stock = {
         'Date': thedatetime,
         'Open': soup.find('b', {'id': 'rtPrev'}).text,

@@ -58,7 +58,7 @@ def getData(stock_symbol):
     return stock
 
 
-if is_weekday == False:
+if is_weekday == True:
     # Get the database
     dbname = get_database()
     collection_name = dbname["stock_prices"]

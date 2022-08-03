@@ -48,6 +48,7 @@ def getData(stock_symbol):
     # Open,High,Low,Close,Adj Close,Volume
     thedatetime = datetime.date.today().strftime('%d/%m/%Y')
     stock = {
+        'Symbol': stock_symbol,
         'Date': thedatetime,
         'Open': soup.find('b', {'id': 'rtPrev'}).text,
         'High': soup.find('b', {'id': 'rtHi'}).text,
